@@ -6,17 +6,63 @@ El repositorio contiene un cuaderno principal:
 
 - `S4_D16_reinforcement_learning_gymnasium.ipynb`
 
-En el cuaderno vas a comparar tres tipos de politicas:
+El objetivo del cuaderno es que el estudiante compare politicas aleatorias,
+heuristicas y aprendidas, entendiendo como cambian cuando el ambiente, la
+recompensa y el espacio de acciones son distintos.
 
-1. Politica aleatoria.
-2. Politica heuristica.
-3. Politica aprendida por un metodo apropiado para el problema.
+## Contenido del cuaderno
 
-Los entornos usados son:
+El cuaderno esta organizado en cuatro bloques:
 
-- `InvertedPendulum-v5` o `CartPole-v1` como respaldo.
-- `MountainCar-v0`.
-- `LunarLander-v3`.
+1. **Ejemplo continuo:** `InvertedPendulum-v5`.
+2. **Ejemplo discreto por discretizacion:** `MountainCar-v0`.
+3. **Ejercicio continuo de control:** `LunarLander-v3`.
+4. **Ejercicio discreto puro:** `FrozenLake-v1`.
+
+En cada bloque se trabaja con la misma estructura:
+
+1. Explicacion del problema.
+2. Codigo del ambiente.
+3. Recompensa y sliders de sintonizacion.
+4. Video de politica aleatoria.
+5. Video de politica heuristica.
+6. Entrenamiento y video de politica aprendida.
+7. Preguntas de reflexion del problema.
+
+Al final hay una comparacion general y reflexiones finales.
+
+## Que se aprende
+
+El cuaderno cubre:
+
+- agente, ambiente, estado, accion, recompensa, politica y episodio;
+- diferencia entre espacios continuos, discretizados y discretos;
+- politica aleatoria como linea base;
+- politicas heuristicas construidas con intuicion de ingenieria;
+- politicas aprendidas con CEM y Q-learning;
+- recompensas originales frente a recompensas moldeadas;
+- historia del entrenamiento con selectores interactivos;
+- ecuacion de Bellman e intuicion de valor futuro;
+- riesgos de reward shaping y reward hacking;
+- conexion conceptual con sim2real y human-in-the-loop.
+
+## Metodos usados
+
+El cuaderno usa dos familias de aprendizaje:
+
+- **CEM (Cross-Entropy Method):** busqueda de parametros guiada por recompensa.
+  Se usa en `InvertedPendulum-v5` y `LunarLander-v3`.
+- **Q-learning:** aprendizaje de valores con la ecuacion de Bellman.
+  Se usa en `MountainCar-v0` y `FrozenLake-v1`.
+
+Los modelos aprendidos pueden entrenarse con:
+
+- **recompensa original:** la funcion de recompensa del ambiente;
+- **recompensa moldeada:** una version mas informada, con senales adicionales
+  para facilitar el aprendizaje.
+
+Despues de entrenar, el cuaderno evalua la politica aprendida con ambas
+metricas para comparar si la recompensa moldeada realmente ayuda.
 
 ## Requisitos
 
@@ -24,7 +70,7 @@ Antes de empezar, instala:
 
 - Python 3.11 o 3.12.
 - Git.
-- Un editor o entorno para notebooks, por ejemplo JupyterLab o VS Code.
+- Un entorno para notebooks, por ejemplo JupyterLab o VS Code.
 
 En Windows, si `python` no funciona en PowerShell, prueba:
 
@@ -32,7 +78,8 @@ En Windows, si `python` no funciona en PowerShell, prueba:
 py --version
 ```
 
-Si tampoco funciona, instala Python desde <https://www.python.org/downloads/> y marca la opcion **Add python.exe to PATH** durante la instalacion.
+Si tampoco funciona, instala Python desde <https://www.python.org/downloads/>
+y marca la opcion **Add python.exe to PATH** durante la instalacion.
 
 ## Descargar el repositorio
 
@@ -79,7 +126,7 @@ En macOS o Linux, si ya activaste el entorno:
 python -m pip install --upgrade -r requirements.txt
 ```
 
-Despues instala el soporte opcional de Box2D para `LunarLander-v3`:
+Luego instala el soporte opcional de Box2D para `LunarLander-v3`:
 
 ```powershell
 & ".\.venv\Scripts\python.exe" -m pip install --upgrade -r requirements-box2d.txt
@@ -91,7 +138,8 @@ En macOS o Linux:
 python -m pip install --upgrade -r requirements-box2d.txt
 ```
 
-Si Box2D falla, puedes continuar con el resto del cuaderno. Solo la parte de `LunarLander-v3` podria no ejecutarse.
+Si Box2D falla, puedes continuar con el resto del cuaderno. Solo la parte de
+`LunarLander-v3` podria no ejecutarse.
 
 ## Registrar el kernel de Jupyter
 
@@ -136,10 +184,29 @@ Python (RL Tutorial)
 ## Orden recomendado de trabajo
 
 1. Ejecuta las celdas desde arriba hacia abajo.
-2. Lee el contexto antes de cada ejemplo.
-3. Compara los videos en este orden: aleatoria, heuristica y aprendida.
-4. Ajusta los parametros de los widgets solo despues de entender el resultado base.
-5. Si una celda parece tardar demasiado, interrumpe el kernel antes de volver a ejecutarla.
+2. Lee el contexto antes de cada problema.
+3. Mira los videos en este orden: aleatoria, heuristica y aprendida.
+4. Antes de mover sliders, observa primero el resultado base.
+5. Compara entrenamiento con recompensa `original` y `moldeada`.
+6. Usa los selectores de historial para ver momentos intermedios del aprendizaje.
+7. Si una celda tarda demasiado, interrumpe el kernel y reduce episodios,
+   poblacion, iteraciones o pasos maximos.
+
+## Notas sobre rendimiento
+
+El cuaderno esta pensado para que los entrenamientos base sean razonables en una
+sesion de clase. Algunas maquinas pueden tardar mas, especialmente en
+`LunarLander-v3`.
+
+Para acelerar:
+
+- reduce `episodes` o `episodios`;
+- reduce `population` o `poblacion` en CEM;
+- reduce `iterations` o `iteraciones`;
+- reduce `max_steps` o `pasos`;
+- aumenta `frame_skip` en las animaciones.
+
+Las barras de progreso muestran el avance de los entrenamientos interactivos.
 
 ## Problemas comunes
 
@@ -166,6 +233,18 @@ Vuelve a registrarlo:
 & ".\.venv\Scripts\python.exe" -m ipykernel install --user --name rl-tutorial --display-name "Python (RL Tutorial)"
 ```
 
+### `InvertedPendulum-v5` no funciona
+
+Este entorno usa MuJoCo. Primero verifica que las dependencias principales se
+instalaron correctamente:
+
+```powershell
+& ".\.venv\Scripts\python.exe" -m pip install --upgrade -r requirements.txt
+```
+
+Si el problema continua, reinicia Jupyter y vuelve a seleccionar el kernel
+`Python (RL Tutorial)`.
+
 ### `LunarLander-v3` no funciona
 
 Instala las dependencias opcionales:
@@ -174,7 +253,8 @@ Instala las dependencias opcionales:
 & ".\.venv\Scripts\python.exe" -m pip install --upgrade -r requirements-box2d.txt
 ```
 
-Si sigue fallando, continua con los otros entornos. El cuaderno esta preparado para avisar cuando `LunarLander` no esta disponible.
+Si sigue fallando, continua con los otros entornos. El resto del cuaderno sigue
+siendo util para estudiar politicas, recompensas y aprendizaje.
 
 ### Los videos tardan o pesan mucho
 
@@ -186,10 +266,11 @@ Los videos se generan dentro del notebook como HTML. Si tu computador va lento:
 
 ## Archivos importantes
 
+- `S4_D16_reinforcement_learning_gymnasium.ipynb`: cuaderno principal.
 - `requirements.txt`: dependencias principales.
 - `requirements-box2d.txt`: dependencias opcionales para `LunarLander`.
 - `.gitignore`: evita subir `.venv/`, caches y checkpoints.
-- `README_SETUP.md`: notas de configuracion local usadas durante la preparacion del entorno.
+- `README_SETUP.md`: notas de configuracion local usadas durante la preparacion.
 
 ## Licencia
 
